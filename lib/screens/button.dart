@@ -53,15 +53,30 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context) {
         return AlertDialog(
           title: TextFormField(
+            controller: name,
             decoration: InputDecoration(hintText: "name"),
           ),
           content: TextFormField(
+            controller: activity,
             decoration: InputDecoration(hintText: 'activity'),
           ),
           actions: [
             TextButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.of(context).pop();
+                },
+                child: Text("Cancel")),
+            TextButton(
+                onPressed: () {
+                  if (name.text.isNotEmpty && activity.text.isNotEmpty) {
+                    FirebaseFirestore.instance
+                        .collection("Todo")
+                        .doc(updatetext)
+                        .update({'name': name.text, 'activity': activity.text});
+                    name.clear();
+                    activity.clear();
+                    Navigator.of(context).pop();
+                  }
                 },
                 child: Text("Update"))
           ],
@@ -90,12 +105,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: StreamBuilder(
                       stream: FirebaseFirestore.instance
                           .collection('Todo')
+                          .orderBy('name')
                           .snapshots(),
                       builder:
                           (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                         if (!snapshot.hasData) {
                           return Center(
-                            child: CircularProgressIndicator(),
+                            child: Text("No data!!"),
                           );
                         }
                         final users = snapshot.data!.docs;
@@ -111,14 +127,22 @@ class _MyHomePageState extends State<MyHomePage> {
                                 children: [
                                   IconButton(
                                       onPressed: () {
-
+                                        updatetext = todo.id;
+                                        name.text = todo['name'];
+                                        activity.text = todo['activity'];
+                                        editDialog();
                                       },
                                       icon: Icon(
                                         Icons.edit,
                                         color: Colors.blue,
                                       )),
                                   IconButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        FirebaseFirestore.instance
+                                            .collection("Todo")
+                                            .doc(todo.id)
+                                            .delete();
+                                      },
                                       icon: Icon(
                                         Icons.delete_outline,
                                         color: Colors.red,

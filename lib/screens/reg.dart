@@ -1,8 +1,10 @@
-// ignore_for_file: camel_case_types, prefer_const_constructors, use_full_hex_values_for_flutter_colors, prefer_const_literals_to_create_immutables, unused_local_variable
+// ignore_for_file: camel_case_types, prefer_const_constructors, use_full_hex_values_for_flutter_colors, prefer_const_literals_to_create_immutables, unused_local_variable, empty_catches, avoid_print
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:testing/screens/login.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -21,13 +23,38 @@ class _SignupState extends State<Signup> {
 
   //!Adding data to firebase
   Future<void> samp() async {
-    final regreference =
-        await FirebaseFirestore.instance.collection('register').add({
-      'name': name.text,
-      'email': email.text,
-      'number': number.text,
-      'password': password.text,
-    });
+    if (valid.currentState!.validate()) {
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: email.text, password: password.text);
+        String uid = userCredential.user!.uid;
+        await FirebaseFirestore.instance.collection("register").add({
+          'name': name.text,
+          'email': email.text,
+          'number': number.text,
+          'password': password.text
+        });
+        print("Register Successfully");
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Login(),
+            ));
+      } catch (e) {
+        print("unexpected error during registration");
+        print('${e}');
+        Fluttertoast.showToast(
+          msg: "Unexpected error during registration.",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    }
   }
 
   @override
