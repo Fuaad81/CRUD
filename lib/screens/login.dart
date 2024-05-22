@@ -1,9 +1,10 @@
-// ignore_for_file: camel_case_types, prefer_const_constructors, prefer_const_literals_to_create_immutables, use_full_hex_values_for_flutter_colors, unused_local_variable, unused_element
+// ignore_for_file: camel_case_types, prefer_const_constructors, prefer_const_literals_to_create_immutables, use_full_hex_values_for_flutter_colors, unused_local_variable, unused_element, unnecessary_null_comparison, avoid_print, unnecessary_brace_in_string_interps
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testing/screens/button.dart';
+import 'package:testing/screens/logsamp.dart';
 import 'package:testing/screens/reg.dart';
 
 class Login extends StatefulWidget {
@@ -37,7 +38,7 @@ class _LoginState extends State<Login> {
               children: [
                 Container(
                   width: 370,
-                  height: 350,
+                  height: 450,
                   decoration:
                       BoxDecoration(color: Color(0xffb4466b2).withOpacity(0.3)),
                   child: Column(
@@ -67,6 +68,12 @@ class _LoginState extends State<Login> {
                               height: 40,
                               child: TextFormField(
                                 controller: email,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'enter password';
+                                  }
+                                  return null;
+                                },
                                 decoration: InputDecoration(
                                     hintText: "Email",
                                     hintStyle: TextStyle(
@@ -92,6 +99,12 @@ class _LoginState extends State<Login> {
                               height: 40,
                               child: TextFormField(
                                 controller: password,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'enter password';
+                                  }
+                                  return null;
+                                },
                                 decoration: InputDecoration(
                                     hintText: "Password",
                                     hintStyle: TextStyle(
@@ -114,28 +127,35 @@ class _LoginState extends State<Login> {
                           children: [
                             InkWell(
                               onTap: () async {
-                                if (validation.currentState!.validate()) {
-                                  String email1 = email.text.trim();
-                                  String pass = password.text.trim();
-                                  var querysnap = await FirebaseFirestore
-                                      .instance
-                                      .collection("register")
-                                      .where("email", isEqualTo: email1)
-                                      .limit(1)
-                                      .get();
+                                try {
+                                  if (validation.currentState!.validate()) {
+                                    String email1 = email.text.trim();
+                                    String pass = password.text.trim();
+                                    var querysnap = await FirebaseFirestore
+                                        .instance
+                                        .collection("register")
+                                        .where("email", isEqualTo: email1)
+                                        .limit(1)
+                                        .get();
 
-                                  if (querysnap.docs.isNotEmpty) {
-                                    var userdata = querysnap.docs.first.data();
-                                    if (userdata["password"] == pass) {
-                                      await _savedata(userdata["StoreId"]);
+                                    if (querysnap.docs.isNotEmpty) {
+                                      var userdata =
+                                          querysnap.docs.first.data();
+                                      if (userdata != null &&
+                                          userdata["password"] == pass) {
+                                        await _savedata(userdata["data"] ?? '');
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  MyHomePage(),
+                                            ));
+                                      }
                                     }
                                   }
+                                } catch (e) {
+                                  print("error ${e}");
                                 }
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => MyHomePage(),
-                                    ));
                               },
                               child: Container(
                                 width: 300,
@@ -164,7 +184,25 @@ class _LoginState extends State<Login> {
                                   builder: (context) => Signup(),
                                 ));
                           },
-                          child: Text("Dont't have any account"))
+                          child: Text("Dont't have any account")),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Logsamp(),
+                                ));
+                          },
+                          child: Text("forgot password1")),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Logsamp(),
+                                ));
+                          },
+                          child: Text("forgot password2")),
                     ],
                   ),
                 ),
