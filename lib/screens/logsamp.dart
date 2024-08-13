@@ -62,25 +62,23 @@ class _LogsampState extends State<Logsamp> {
                     ElevatedButton(
                         onPressed: () async {
                           if (_formkey.currentState?.validate() ?? true) {
-                      bool emailExists = await checkEmailExists(email.text);
-                      if (emailExists) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (ctx) =>
-                                StoreResetPassword(email: email.text),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("email not found")
-                          ),
-                        );
-                      }
-                    }
-                  },
-                        
+                            bool emailExists =
+                                await checkEmailExists(email.text);
+                            if (emailExists) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (ctx) =>
+                                      StoreResetPassword(email: email.text),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("email not found")),
+                              );
+                            }
+                          }
+                        },
                         child: Text("Submit")),
                   ],
                 ),
@@ -92,17 +90,18 @@ class _LogsampState extends State<Logsamp> {
     );
   }
 }
+
 Future<bool> checkEmailExists(String email) async {
-    try {
-      // Query Firestore collection "storekeeper" for the provided email
-      var querySnapshot = await FirebaseFirestore.instance
-          .collection('register')
-          .where('email', isEqualTo: email)
-          .get();
-      // Check if any documents match the provided email
-      return querySnapshot.docs.isNotEmpty;
-    } catch (e) {
-      print("Error checking email: $e");
-      return false;
-    }
+  try {
+    // Query Firestore collection "storekeeper" for the provided email
+    var querySnapshot = await FirebaseFirestore.instance
+        .collection('register')
+        .where('email', isEqualTo: email)
+        .get();
+    // Check if any documents match the provided email
+    return querySnapshot.docs.isNotEmpty;
+  } catch (e) {
+    print("Error checking email: $e");
+    return false;
   }
+}

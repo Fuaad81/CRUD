@@ -174,28 +174,31 @@ class _SignupState extends State<Signup> {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 80),
+                padding: const EdgeInsets.only(top: 50),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    InkWell(
-                      onTap: () {
-                        samp();
-                      },
-                      child: Container(
-                        width: 380,
-                        height: 50,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Color(0xffb4472B2)),
-                        child: Center(
-                            child: Text("Register",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold))),
-                      ),
-                    ),
+                    // InkWell(
+                    //   onTap: () {
+                    //     samp();
+                    //   },
+                    //   child: Container(
+                    //     width: 380,
+                    //     height: 50,
+                    //     decoration: BoxDecoration(
+                    //         borderRadius: BorderRadius.circular(20),
+                    //         color: Color(0xffb4472B2)),
+                    //     child: Center(
+                    //         child: Text("Register",
+                    //             style: TextStyle(
+                    //                 color: Colors.white,
+                    //                 fontSize: 20,
+                    //                 fontWeight: FontWeight.bold))),
+                    //   ),
+                    // ),
+                    ElevatedButton(onPressed: () {
+                      samp();
+                    }, child: Text("Register"))
                   ],
                 ),
               ),

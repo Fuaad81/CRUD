@@ -117,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         final users = snapshot.data!.docs;
                         return ListView.builder(
                           itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (context, index) {
+                          itemBuilder: (context, index) {   
                             var todo = snapshot.data!.docs[index];
                             return ListTile(
                               title: Text(todo['name']),
